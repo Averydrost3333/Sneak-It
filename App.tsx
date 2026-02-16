@@ -17,12 +17,12 @@ const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const [settings, setSettings] = useState<AppSettings>(() => {
-    const saved = localStorage.getItem('sneak-it-settings-v2');
+    const saved = localStorage.getItem('sneak-it-settings-v3');
     return saved ? JSON.parse(saved) : {
       tabTitle: 'Sneak It | Galactic Games',
       tabIcon: 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png',
-      theme: 'default',
-      cloakType: 'scientific'
+      theme: 'monochrome', // Start in Black and White
+      cloakType: 'josiah'
     };
   });
 
@@ -35,9 +35,9 @@ const App: React.FC = () => {
       document.getElementsByTagName('head')[0].appendChild(link);
     }
     link.href = settings.tabIcon;
-    localStorage.setItem('sneak-it-settings-v2', JSON.stringify(settings));
+    localStorage.setItem('sneak-it-settings-v3', JSON.stringify(settings));
 
-    // Handle body classes for themes
+    // Handle theme classes
     if (settings.theme === 'monochrome') {
       document.body.classList.add('grayscale');
     } else {
@@ -47,12 +47,13 @@ const App: React.FC = () => {
     if (settings.theme === 'midnight') {
       document.body.style.background = '#000000';
     } else {
-      document.body.style.background = ''; // Use CSS default
+      document.body.style.background = ''; 
     }
   }, [settings]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Panic button: Alt+P
       if (e.key === 'p' && e.altKey) {
         setIsStealthMode(prev => !prev);
       }
@@ -70,69 +71,130 @@ const App: React.FC = () => {
     });
   }, [selectedCategory, searchQuery]);
 
+  // Stealth / Cloak Mode
   if (isStealthMode) {
     if (settings.cloakType === 'josiah') {
       return (
-        <div className="min-h-screen bg-[#f3f4f6] text-slate-800 font-sans p-0 m-0 grayscale-0">
-          <nav className="bg-[#003366] text-white p-4 shadow-md flex justify-between items-center">
-            <div className="flex items-center gap-3">
-               <img src="https://cdn-icons-png.flaticon.com/512/167/167707.png" className="w-8 h-8 invert" alt="Logo" />
-               <h1 className="text-xl font-bold">Josiah Allen Junior High</h1>
+        <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans p-0 m-0 grayscale-0 overflow-x-hidden">
+          {/* Official Looking School Header */}
+          <header className="bg-[#002d5a] text-white shadow-lg">
+            <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-4">
+                 <div className="bg-white p-2 rounded shadow-sm">
+                   <img src="https://cdn-icons-png.flaticon.com/512/167/167707.png" className="w-10 h-10" alt="District Logo" />
+                 </div>
+                 <div>
+                   <h1 className="text-xl font-bold uppercase tracking-tight">Josiah Allen Public School District</h1>
+                   <p className="text-[10px] opacity-80 uppercase tracking-widest font-semibold">Excellence in Education Since 1954</p>
+                 </div>
+              </div>
+              <nav className="flex gap-6 text-[11px] font-bold uppercase tracking-wider">
+                <span className="hover:underline cursor-pointer">Families</span>
+                <span className="hover:underline cursor-pointer">Staff</span>
+                <span className="hover:underline cursor-pointer">Students</span>
+                <span className="hover:underline cursor-pointer">Board</span>
+              </nav>
             </div>
-            <div className="flex gap-4 text-sm font-medium">
-              <span>Home</span>
-              <span>Academics</span>
-              <span>Library</span>
-              <span>Portal</span>
-            </div>
-          </nav>
-          <div className="max-w-5xl mx-auto p-12">
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200">
-               <h2 className="text-2xl font-bold text-[#003366] mb-4">Student Resource Center</h2>
-               <div className="grid grid-cols-3 gap-6 mb-12">
-                 {['Student Handbook', 'Lunch Menu', 'Academic Calendar'].map(item => (
-                   <div key={item} className="p-6 bg-slate-50 border border-slate-200 rounded-lg text-center hover:bg-slate-100 transition-colors cursor-pointer">
-                      <div className="w-12 h-12 bg-[#003366]/10 text-[#003366] rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
-                      </div>
-                      <span className="font-bold text-sm">{item}</span>
-                   </div>
-                 ))}
+          </header>
+
+          <main className="max-w-6xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar Tools */}
+            <aside className="lg:col-span-1 space-y-4">
+              <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                <h3 className="font-bold text-slate-800 text-sm mb-3 border-b pb-2">Student Quicklinks</h3>
+                <div className="space-y-2">
+                  {['Infinite Campus', 'PowerSchool Mobile', 'Canvas Dashboard', 'Naviance Student', 'Library Catalog'].map(link => (
+                    <div key={link} className="flex items-center gap-2 text-xs text-blue-700 hover:underline cursor-pointer">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+                      {link}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 shadow-sm">
+                <h3 className="font-bold text-amber-900 text-sm mb-2 flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Alerts
+                </h3>
+                <p className="text-[10px] text-amber-800">Delayed start policy updated for the 2024-25 winter season. Click for details.</p>
+              </div>
+            </aside>
+
+            {/* Main Content Area */}
+            <div className="lg:col-span-3 space-y-8">
+               <div className="bg-white border border-slate-200 rounded-lg p-8 shadow-sm">
+                  <h2 className="text-3xl font-serif font-bold text-[#002d5a] mb-6">Welcome to the Student Resource Hub</h2>
+                  <p className="text-slate-600 mb-8 leading-relaxed">
+                    Our mission at Josiah Allen is to provide a safe, inclusive, and challenging learning environment that encourages high expectations for success through development-appropriate instruction that allows for individual differences and learning styles.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 border border-slate-100 bg-slate-50 rounded-lg">
+                       <h4 className="font-bold text-sm mb-2 text-[#002d5a]">Upcoming Events</h4>
+                       <ul className="text-xs space-y-2">
+                         <li className="flex justify-between border-b pb-1"><span>PTA Meeting</span> <span className="text-slate-400">Oct 24</span></li>
+                         <li className="flex justify-between border-b pb-1"><span>Fall Break (No School)</span> <span className="text-slate-400">Oct 28</span></li>
+                         <li className="flex justify-between"><span>Drama Club Performance</span> <span className="text-slate-400">Nov 02</span></li>
+                       </ul>
+                    </div>
+                    <div className="p-4 border border-slate-100 bg-slate-50 rounded-lg">
+                       <h4 className="font-bold text-sm mb-2 text-[#002d5a]">Cafeteria Today</h4>
+                       <p className="text-xs italic text-slate-500">Main: Roasted Chicken w/ Steamed Broccoli</p>
+                       <p className="text-xs italic text-slate-500 mt-1">Side: Apple slices or Garden Salad</p>
+                    </div>
+                  </div>
                </div>
-               <h3 className="text-lg font-bold mb-3 border-b pb-2">District Announcements</h3>
-               <p className="text-sm text-slate-600 mb-4 italic">Updated: Monday, October 21st, 2024</p>
-               <ul className="space-y-3 text-sm">
-                 <li>• Winter Break schedule has been finalized. Please check your emails.</li>
-                 <li>• Science Fair registrations are now open for 7th and 8th graders.</li>
-                 <li>• The computer lab in Wing B is currently under maintenance.</li>
-               </ul>
+
+               <div className="bg-blue-50 border border-blue-100 p-6 rounded-lg">
+                 <h3 className="font-bold text-blue-900 mb-2">Notice of Compliance</h3>
+                 <p className="text-xs text-blue-800/80 italic">
+                   All student activity on district networks is subject to the Acceptable Use Policy (AUP). By accessing this portal, you agree to comply with all regional guidelines regarding digital citizenship.
+                 </p>
+               </div>
             </div>
-          </div>
+          </main>
+
+          <footer className="bg-slate-100 border-t border-slate-200 mt-12 py-8 px-6 text-center text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+            &copy; 2024 Josiah Allen Public School District | All Rights Reserved | Privacy Policy
+          </footer>
+
           <button 
             onClick={() => setIsStealthMode(false)}
-            className="fixed bottom-4 right-4 text-[10px] text-slate-400 hover:text-slate-600 transition-colors"
+            className="fixed bottom-4 right-4 text-[9px] text-slate-300 hover:text-slate-500 transition-colors"
           >
-            System Override
+            SYS_EXIT
           </button>
         </div>
       );
     }
 
+    // Default Academic Cloak
     return (
-      <div className="min-h-screen bg-slate-50 p-8 font-serif grayscale-0">
+      <div className="min-h-screen bg-slate-50 p-8 font-serif grayscale-0 text-slate-900">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-slate-900 mb-6">Quantum Cryptography and the Future of Network Security</h1>
-          <p className="text-slate-700 leading-relaxed mb-6">
-            In an era defined by rapid computational advancement, the traditional paradigms of asymmetric encryption face unprecedented challenges...
+          <nav className="border-b border-slate-200 pb-4 mb-8 flex justify-between items-center">
+            <h2 className="text-lg font-bold italic">Journal of Computational Ethics</h2>
+            <div className="text-xs uppercase font-bold tracking-widest opacity-50">Volume 42 | Issue 7</div>
+          </nav>
+          <h1 className="text-4xl font-black mb-6 leading-tight">Quantum Cryptography and the Future of Network Security in Higher Education</h1>
+          <p className="text-slate-700 leading-relaxed mb-6 first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
+            In an era defined by rapid computational advancement, the traditional paradigms of asymmetric encryption face unprecedented challenges. The rise of Shor's algorithm and the theoretical promise of large-scale quantum computers necessitate a shift toward post-quantum protocols...
           </p>
-          <div className="aspect-[16/9] w-full bg-slate-200 rounded-lg flex items-center justify-center text-slate-500 italic mb-6 border border-slate-300">
-             Figure 1.2: Entanglement Distribution over Fiber Optic Arrays
+          <div className="p-6 bg-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-500 italic mb-6 border border-slate-300">
+             <div className="w-full h-40 bg-slate-300/50 mb-3 rounded flex items-center justify-center">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+             </div>
+             <span className="text-xs">Figure 1.2: Entanglement Distribution over Fiber Optic Arrays</span>
           </div>
+          <p className="text-slate-700 leading-relaxed mb-6">
+            Research into lattice-based cryptography suggests that we can maintain security through mathematical problems that remain hard for both classical and quantum systems. The implications for institutional infrastructure are vast, ranging from secure data storage to the very way students interact with local networks.
+          </p>
           <button 
             onClick={() => setIsStealthMode(false)}
-            className="fixed bottom-4 right-4 text-[10px] text-slate-400 hover:text-slate-600 transition-colors"
+            className="fixed bottom-4 right-4 text-[10px] text-slate-300 hover:text-slate-400 transition-colors"
           >
-            Terminal Exit
+            TERMINAL_EXIT
           </button>
         </div>
       </div>
@@ -148,7 +210,7 @@ const App: React.FC = () => {
   }, [settings.theme]);
 
   return (
-    <div className={`min-h-screen flex flex-col selection:bg-indigo-500/30 transition-all ${themeClasses}`}>
+    <div className={`min-h-screen flex flex-col selection:bg-indigo-500/30 transition-all duration-300 ${themeClasses}`}>
       {/* Navigation */}
       <nav className={`sticky top-0 z-40 backdrop-blur-xl border-b border-indigo-500/10 px-6 py-4 ${settings.theme === 'midnight' ? 'bg-black/60' : 'bg-slate-950/60'}`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -180,7 +242,7 @@ const App: React.FC = () => {
                className={`p-2.5 rounded-xl border transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${
                  view === 'explorer' 
                  ? 'bg-indigo-600 border-indigo-500 text-white' 
-                 : 'bg-slate-900/80 border-indigo-500/10 text-indigo-400 hover:bg-slate-800'
+                 : 'bg-slate-900/80 border-indigo-500/10 text-indigo-400 hover:bg-slate-800 shadow-lg'
                }`}
              >
                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -189,18 +251,18 @@ const App: React.FC = () => {
 
              <button 
                onClick={() => setIsSettingsOpen(true)}
-               className="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-xl text-slate-400 border border-slate-800 transition-all"
+               className="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-xl text-slate-400 border border-slate-800 transition-all shadow-md"
                title="System Settings"
              >
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
              </button>
 
              <button 
                onClick={() => setIsStealthMode(true)}
-               className="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-xl text-indigo-400 border border-indigo-500/10 transition-all group"
+               className="bg-slate-900/80 hover:bg-slate-800 p-2.5 rounded-xl text-indigo-400 border border-indigo-500/10 transition-all group shadow-md"
                title="Stealth Mode (Alt+P)"
              >
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
              </button>
           </div>
         </div>
